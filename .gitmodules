@@ -5,6 +5,8 @@
 [submodule "custom/plugins/zsh-autosuggestions"]
 	path = custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
+	branch = master
 [submodule "custom/plugins/zsh-defer"]
 	path = custom/plugins/zsh-defer
 	url = https://github.com/romkatv/zsh-defer.git
+	branch = master
