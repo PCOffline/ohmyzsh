@@ -1,7 +1,7 @@
 # zsh Aliases
 alias zshconfig="code ~/.zshrc"
 alias zconfig="zshconfig"
-alias ohmyzsh="code ~/.oh-my-zsh"
+alias ohmyzsh="code ~/ohmyzsh"
 alias soz="source ~/.zshrc"
 
 # Utility Aliases
