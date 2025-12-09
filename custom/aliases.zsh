@@ -26,37 +26,37 @@ alias kdp="kubectl delete pod"
 function get_pod() {
     local keyword=$1
     local namespace=$2
-
+    
     if [[ $keyword == "" ]]; then
         echo "No pod name provided"
         return 1
     fi
-
+    
     if [[ $namespace == "" ]]; then
         namespace="eldar"
     fi
-
+    
     echo $(kgp -n $namespace | grep "^$keyword" | awk '{print $1}')
 }
 
 function kgl() {
     local pod=$(get_pod $@)
     local namespace=$2
-
+    
     if [[ $namespace == "" ]]; then
         namespace="eldar"
     fi
-
+    
     kubectl logs $pod -n $namespace
 }
 
 function kdpa() {
     local namespace=$1
-
+    
     if [[ $namespace == "" ]]; then
         namespace="eldar"
     fi
-
+    
     local pod=$(kgp -n $namespace | grep "CrashLoopBackOff" | awk '{print $1}')
     kubectl delete pod $pod -n $namespace
 }
@@ -64,33 +64,33 @@ function kdpa() {
 function kdps() {
     local pod=$(get_pod $@)
     local namespace=$2
-
+    
     if [[ $namespace == "" ]]; then
         namespace="eldar"
     fi
-
+    
     kdp $pod -n $namespace
 }
 
 function kgenv() {
     local pod=$(get_pod $@)
     local namespace=$2
-
+    
     echo $pod
-
+    
     if [[ $namespace == "" ]]; then
         namespace="eldar"
     fi
-
+    
     kubectl exec -it $pod -n $namespace -- env
 }
 
 function watch2() {
     IN=1
     case $1 in
-    -n)
-        IN=$2
-        shift 2
+        -n)
+            IN=$2
+            shift 2
         ;;
     esac
     printf '\033c' # clear
@@ -109,8 +109,8 @@ function watch2() {
 
 # Git Aliases
 ## Rename current branch
-alias gcrename="grename "$(current_branch)" $1"
 alias gpod="git pull origin "$(git_develop_branch)""
+alias glom="git pull origin "$(git_main_branch)""
 alias gpn="git prune"
 alias gpu="gp -u origin $(current_branch)"
 alias s="gsw -"
@@ -125,6 +125,10 @@ alias bad="git bisect bad"
 alias ccurr="current_branch | tr -d '\n' | pbcopy"
 alias gbdm='gbD $(get_merged_branches)'
 
+function gcrename() {
+    grename "$(current_branch)" $1
+}
+
 function get_branch() {
     local selected_prefix="* "
     local remotes_prefix="remotes/origin/"
@@ -135,16 +139,16 @@ function get_branch() {
 }
 
 function get_merged_branches() {
-    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+    local current_branch=$(get_current_branch)
     local target_branch=${1:-$current_branch}
-
+    
     # Find all merged branches, excluding the current branch and main/master branches
     git branch --merged "$target_branch" |
-        grep -v "^\*" |
-        grep -v "$target_branch$" |
-        grep -v "master$" |
-        grep -v "main$" |
-        sed 's/^[ \t]*/  /'
+    grep -v "^\*" |
+    grep -v "$target_branch$" |
+    grep -v "master$" |
+    grep -v "main$" |
+    sed 's/^[ \t]*/  /'
 }
 
 function gsws() {
@@ -171,38 +175,43 @@ function gdn() {
 }
 
 # Project Aliases
-alias web="z ecommerce-website"
-alias autom="z ecommerce-automation"
-alias mono="z monorepo"
-alias dash="z dashboard"
-alias server="z ecommerce-server"
-alias core="z core"
-alias bff="z bff-gateway"
-alias next="web; npm run dev"
-alias serve="server; devspace dev"
-alias market="core; devspace run-pipeline marketing"
-alias score="core; devspace dev"
-alias dsreset="devspace reset pods"
-alias bfg="nx run bff-gateway:serve:development --verbose"
-alias minor="ncu --target minor --peer"
-alias lint="npm run lint --"
-alias lintf="npm run lint:fix"
-alias lintc="lint --cache=false"
-alias lintq="lint --quiet"
-alias lintqc="lintc --quiet"
-alias lintcq="lintqc"
-alias apollo='z apollo/scripts; docker compose build --build-arg NPM_TOKEN=$(cat .npm_token); docker compose up -d $1'
-alias apollu='z apollo-ui; npm i; npm run dev'
+function yes() {
+    if [ $# -eq 0 ] ; then
+        yarn "start:devgrounds"
+    else
+        if [[ $1 =~ ^(dev0?)?([1-9])$ ]] ; then
+            yarn "start:dev0${match[2]}"
+            elif [[ $1 =~ ^(dev)?(1[1-5])$ ]] ; then
+            yarn "start:dev${match[2]}"
+        else
+            echo "Error! $@"
+        fi
+    fi
+}
 
-function dsareset() {
-    local current_dir=$(pwd)
-    server
-    dsreset
-    core
-    dsreset
-    dash
-    dsreset
-    cd $current_dir
+alias ts="yarn typecheck"
+alias pmo="yarn format"
+alias tspmo="ts & pmo & wait"
+
+function p() {
+    local staged=$(git staged)
+    
+    if [[ "$staged" == "" ]]; then
+        return 1
+    fi
+    
+    local filtered=$(git staged | grep -E '\.([jt]s|[jt]sx)$' | sed 's|^|../|')
+    yarn prettier --affected --write $filtered
+}
+
+function sfmt () {
+    dir=$1
+    
+    if [[ $dir == "" ]]; then
+        dir="."
+    fi
+    
+    yarn prettier --write $dir
 }
 
 # Rust Aliases
