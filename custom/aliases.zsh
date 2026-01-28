@@ -115,7 +115,7 @@ function watch2() {
 alias gpod="git pull origin "$(git_develop_branch)""
 alias glom="git pull origin "$(git_main_branch)""
 alias gpn="git prune"
-alias gpu="gp -u origin $(current_branch)"
+alias gpu="gp -u origin $(git_current_branch)"
 alias s="gsw -"
 alias gde="gd ':!package-lock.json'"
 alias grH="grh HEAD^"   # git reset HEAD^
@@ -125,11 +125,11 @@ alias grkH="grhk HEAD^" # git reset --keep HEAD^
 alias grsH="grhs HEAD^" # git reset --soft HEAD^
 alias good="git bisect good"
 alias bad="git bisect bad"
-alias ccurr="current_branch | tr -d '\n' | pbcopy"
+alias ccurr="git_current_branch | tr -d '\n' | pbcopy"
 alias gbdm='gbD $(get_merged_branches)'
 
 function gcrename() {
-    grename "$(current_branch)" $1
+    grename "$(git_current_branch)" $1
 }
 
 function get_branch() {
@@ -142,7 +142,7 @@ function get_branch() {
 }
 
 function get_merged_branches() {
-    local current_branch=$(get_current_branch)
+    local current_branch=$(git_current_branch)
     local target_branch=${1:-$current_branch}
     
     # Find all merged branches, excluding the current branch and main/master branches
