@@ -11,6 +11,7 @@ alias cd="z"
 alias nug="npm update -g"
 alias c="clear"
 alias ncui="npm-check-updates --format group --interactive"
+alias upciu="npx update-browserslist-db@latest"
 
 # Kubernetes Aliases
 alias kc="kubectl config use-context"
