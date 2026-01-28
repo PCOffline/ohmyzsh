@@ -12,7 +12,7 @@ dependencies:
   plugins/gradle:
     repo: gradle/gradle-completion
     branch: master
-    version: 25c3d368527e7679e30a63f53cb20540cb285a24
+    version: a9d7c822e42cc6a5b028b59e46cffcc8e7bc1134
     precopy: |
       set -e
       find . ! -name _gradle ! -name LICENSE -delete
@@ -27,6 +27,14 @@ dependencies:
     postcopy: |
       set -e
       test -e dependencies/OMZ-README.md && cat dependencies/OMZ-README.md >> README.md
+  plugins/kube-ps1:
+    repo: jonmosco/kube-ps1
+    branch: master
+    version: 0b0e6daf4197ecabb1ae4f2d46fb148a8e1e73e5
+    precopy: |
+      set -e
+      find . ! -name kube-ps1.sh ! -name LICENSE ! -name README.md -delete
+      test -e kube-ps1.sh && mv kube-ps1.sh kube-ps1.plugin.zsh
   plugins/wd:
     repo: mfaerevaag/wd
     branch: master
