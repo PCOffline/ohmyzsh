@@ -1,7 +1,9 @@
+export EDITOR="zed"
+
 # zsh Aliases
-alias zshconfig="code ~/.zshrc"
+alias zshconfig="$EDITOR ~/.zshrc"
 alias zconfig="zshconfig"
-alias ohmyzsh="code ~/ohmyzsh"
+alias ohmyzsh="$EDITOR ~/ohmyzsh"
 alias soz="source ~/.zshrc"
 
 # Utility Aliases
