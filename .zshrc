@@ -69,6 +69,11 @@ HIST_STAMPS="dd/mm/yyyy"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+# Disable specific modules
+MY_ALIASES_DISABLED=()
+# Or enable auto-detection (default behavior)
+MY_ALIASES_AUTO_DETECT=true
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -76,11 +81,12 @@ HIST_STAMPS="dd/mm/yyyy"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     aliases
-
     git
     jsontools
     macos
     magic-enter
+    mise
+    my-aliases
     nvm
     rust
     z
@@ -100,9 +106,9 @@ source $ZSH/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='code'
+  export EDITOR="zed"
 else
-  export EDITOR='code'
+  export EDITOR="zed"
 fi
 
 # Compilation flags
