@@ -17,6 +17,6 @@ alias pmo="yarn format"
 alias tspmo="ts & pmo & wait"
 
 # Open a new PR from the current branch
-function pr() {
+function opr() {
   open "https://bitbucket.org/buildots-ai/buildots/pull-requests/new?source=$(git_current_branch)&t=1"
 }
