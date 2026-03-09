@@ -13,9 +13,14 @@ alias bad="git bisect bad"
 alias ccurr="git_current_branch | tr -d '\n' | pbcopy"
 alias gbdm='gbD $(get_merged_branches)'
 alias gstash='gsta -S'
+alias clc="last_commit | pbcopy"
 
 function gcrename() {
     grename "$(git_current_branch)" $1
+}
+
+function last_commit() {
+  git log -1 --oneline --pretty=format:"%h"
 }
 
 function get_branch() {
