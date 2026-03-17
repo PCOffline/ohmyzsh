@@ -99,6 +99,12 @@ function gen_git_ssh() {
   host="${host_arg[-1]:-github.com}"
   key_file="${output_arg[-1]:-$HOME/.ssh/id_ed25519}"
 
+  # Reject .pub extension in output path
+  if [[ "$key_file" == *.pub ]]; then
+    echo "Error: --output should not end with .pub (that's added automatically for the public key)"
+    return 1
+  fi
+
   # Validate required arguments
   if [[ -z "$email" ]]; then
     echo "Usage: gen_git_ssh --email <email> [--host <host>] [--output <path>]"
