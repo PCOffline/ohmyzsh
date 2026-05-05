@@ -20,7 +20,7 @@ function get_pod() {
     fi
 
     if [[ $namespace == "" ]]; then
-        namespace="eldar"
+        namespace=$KUBECTL_NAMESPACE
     fi
 
     echo $(kgp -n $namespace | grep "^$keyword" | awk '{print $1}')
@@ -31,7 +31,7 @@ function kgl() {
     local namespace=$2
 
     if [[ $namespace == "" ]]; then
-        namespace="eldar"
+        namespace=$KUBECTL_NAMESPACE
     fi
 
     kubectl logs $pod -n $namespace
@@ -41,7 +41,7 @@ function kdpa() {
     local namespace=$1
 
     if [[ $namespace == "" ]]; then
-        namespace="eldar"
+        namespace=$KUBECTL_NAMESPACE
     fi
 
     local pod=$(kgp -n $namespace | grep "CrashLoopBackOff" | awk '{print $1}')
@@ -53,7 +53,7 @@ function kdps() {
     local namespace=$2
 
     if [[ $namespace == "" ]]; then
-        namespace="eldar"
+        namespace=$KUBECTL_NAMESPACE
     fi
 
     kdp $pod -n $namespace
@@ -66,7 +66,7 @@ function kgenv() {
     echo $pod
 
     if [[ $namespace == "" ]]; then
-        namespace="eldar"
+        namespace=$KUBECTL_NAMESPACE
     fi
 
     kubectl exec -it $pod -n $namespace -- env
