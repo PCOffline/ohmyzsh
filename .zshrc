@@ -46,15 +46,16 @@ zsh-defer source ${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-
 
 # ── User configuration ──────────────────────────────────────────────────────
 export EDITOR='zed'
+export KUBECTL_NAMESPACE='your_namespace'
 
 # pnpm
-export PNPM_HOME="/Users/eldarbakerman/Library/pnpm"
+export PNPM_HOME="~/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # Pycode
-export PYTHONPATH="/Users/eldarbakerman/projects/buildots/pycode:$PYTHONPATH"
+export PYTHONPATH="~/projects/buildots/pycode:$PYTHONPATH"
 export HDF5_DIR=/opt/homebrew/Cellar/hdf5/1.14.6/
 export GPG_TTY=$(tty)
