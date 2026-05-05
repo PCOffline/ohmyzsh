@@ -12,10 +12,10 @@
 # Helper function to check if module is enabled
 _my_aliases_enabled() {
   local module=$1
-  
+
   # Check if explicitly disabled
   (( ${MY_ALIASES_DISABLED[(Ie)$module]} )) && return 1
-  
+
   # Auto-detect if enabled
   if [[ "$MY_ALIASES_AUTO_DETECT" == "true" ]]; then
     case $module in
@@ -24,7 +24,7 @@ _my_aliases_enabled() {
       git)     (( $+commands[git] )) || return 1 ;;
     esac
   fi
-  
+
   return 0
 }
 
