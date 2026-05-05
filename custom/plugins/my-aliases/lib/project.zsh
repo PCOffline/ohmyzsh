@@ -192,6 +192,11 @@ function gen_git_gpg() {
   apply_scope="${apply_arg[-1]}"
   expire="${expire_arg[-1]:-0}"
 
+  # Convert YYYY-MM-DD to YYYYMMDD for GPG batch mode
+  if [[ "$expire" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    expire="${expire//-/}"
+  fi
+
   # Check gpg is installed
   if ! command -v gpg &>/dev/null; then
     echo "Error: gpg is not installed"
