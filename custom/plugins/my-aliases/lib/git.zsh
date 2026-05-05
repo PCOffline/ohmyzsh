@@ -67,3 +67,25 @@ function gtag() {
 function gdn() {
     gdnolock $@ ":!**/*-lock.json" ":!**/*.lock"
 }
+
+# ── Alias Hints ─────────────────────────────────────────────────────────────
+# Custom rules for patterns that auto-detection can't catch.
+# Rules are checked in order — first match wins.
+if (( ${+functions[alias_hint_add]} )); then
+  # Prefer git switch over git checkout
+  alias_hint_add "git checkout -[bB] .+" "gswc" "prefer 'git switch --create' over 'git checkout -b'"
+  alias_hint_add "git checkout .+" "gsw" "prefer 'git switch' over 'git checkout'"
+
+  # Dynamic branch aliases (prefer over hardcoded branch names)
+  alias_hint_add "git switch (dev|devel|develop|development)" "gswd" "auto-detects develop branch"
+  alias_hint_add "git switch (main|master)" "gswm" "auto-detects main branch"
+  alias_hint_add "git (pull|merge) origin (dev|devel|develop|development)" "glod" "auto-detects develop branch"
+  alias_hint_add "git (pull|merge) origin (main|master)" "glom" "auto-detects main branch"
+
+  # Partial branch matching (catch-all — must come after specific rules)
+  alias_hint_add "git switch [^-].+" "gsws <partial>" "finds branches by partial name"
+  alias_hint_add "git branch -[dD] [^-].+" "gbDs <partial>" "finds branches by partial name"
+
+  # Flag equivalences
+  alias_hint_add "git remote (-v|--verbose)" "grv"
+fi
