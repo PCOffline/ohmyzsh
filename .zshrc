@@ -21,7 +21,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 HIST_STAMPS="dd/mm/yyyy"
 
 # Custom aliases config
-MY_ALIASES_DISABLED=(kubectl)
+MY_ALIASES_DISABLED=()
 MY_ALIASES_AUTO_DETECT=true
 
 # zsh-autosuggestions & zsh-syntax-highlighting are deferred below for faster startup
