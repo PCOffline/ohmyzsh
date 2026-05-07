@@ -27,6 +27,7 @@ MY_ALIASES_AUTO_DETECT=true
 # zsh-autosuggestions & zsh-syntax-highlighting are deferred below for faster startup
 plugins=(
     aliases
+    alias-hints
     git
     jsontools
     macos
