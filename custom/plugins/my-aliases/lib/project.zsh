@@ -18,7 +18,7 @@ alias tspmo="ts & pmo & wait"
 
 # Open a new PR from the current branch
 function opr() {
-  open "https://bitbucket.org/buildots-ai/buildots/pull-requests/new?source=$(git_current_branch)&t=1"
+  _open_url "https://bitbucket.org/buildots-ai/buildots/pull-requests/new?source=$(git_current_branch)&t=1"
 }
 
 function trns() {
@@ -136,19 +136,28 @@ function gen_git_ssh() {
     echo "Host $host" >> ~/.ssh/config
     echo "  IdentityFile $key_file" >> ~/.ssh/config
     echo "  AddKeysToAgent yes" >> ~/.ssh/config
-    # Only add UseKeychain if supported
-    if ssh -o UseKeychain=yes -o BatchMode=yes localhost 2>&1 | grep -qv "Bad configuration option"; then
+    if [[ "$OSTYPE" == darwin* ]]; then
       echo "  UseKeychain yes" >> ~/.ssh/config
     fi
   fi
 
-  # Add key to ssh-agent
-  if ! ssh-add --apple-use-keychain "$key_file" 2>/dev/null; then
-    /usr/bin/ssh-add --apple-use-keychain "$key_file"
+  if [[ "$OSTYPE" == darwin* ]]; then
+    if ! ssh-add --apple-use-keychain "$key_file" 2>/dev/null; then
+      /usr/bin/ssh-add --apple-use-keychain "$key_file"
+    fi
+  else
+    ssh-add "$key_file"
   fi
 
-  pbcopy < "${key_file}.pub"
-  echo "Copied public key to clipboard"
+  local pub_key
+  pub_key=$(<"${key_file}.pub")
+  if print -rn -- "$pub_key" | _clipboard_copy 2>/dev/null; then
+    echo "Copied public key to clipboard"
+  else
+    echo "Could not copy to clipboard. Public key:"
+    echo ""
+    echo "$pub_key"
+  fi
 }
 
 function gen_git_gpg() {
@@ -181,7 +190,7 @@ function gen_git_gpg() {
     echo "  -a, --apply   Configure Git: 'global' (all repos) or 'local' (current repo)"
     echo "  -h, --help    Show this help message"
     echo ""
-    echo "Also configures macOS GPG environment (GPG_TTY, pinentry-mac)."
+    echo "Also exports GPG_TTY in ~/.zshrc, and configures pinentry-mac on macOS."
     return 0
   fi
 
@@ -221,34 +230,33 @@ function gen_git_gpg() {
     return 1
   fi
 
-  # macOS GPG configuration: Add GPG_TTY to .zshrc if not present
   if ! grep -q "GPG_TTY" ~/.zshrc 2>/dev/null; then
     echo 'export GPG_TTY=$(tty)' >> ~/.zshrc
     echo "Added GPG_TTY to ~/.zshrc"
   fi
 
-  # Check if pinentry-mac is installed, offer to install if not
-  if ! command -v pinentry-mac &>/dev/null; then
-    if read -q "?pinentry-mac not found. Install it for GUI pin entry? (y/n) "; then
-      echo
-      brew install pinentry-mac
-    else
-      echo
-    fi
-  fi
-
-  # Configure gpg-agent to use pinentry-mac if available
-  if command -v pinentry-mac &>/dev/null; then
-    local pinentry_path="$(brew --prefix)/bin/pinentry-mac"
-
-    mkdir -p ~/.gnupg
-    if ! grep -q "pinentry-program" ~/.gnupg/gpg-agent.conf 2>/dev/null; then
-      echo "pinentry-program $pinentry_path" >> ~/.gnupg/gpg-agent.conf
-      echo "Configured pinentry-mac in gpg-agent.conf"
+  if [[ "$OSTYPE" == darwin* ]]; then
+    if ! command -v pinentry-mac &>/dev/null; then
+      if read -q "?pinentry-mac not found. Install it for GUI pin entry? (y/n) "; then
+        echo
+        brew install pinentry-mac
+      else
+        echo
+      fi
     fi
 
-    # Restart gpg-agent to apply changes
-    killall gpg-agent 2>/dev/null || true
+    if command -v pinentry-mac &>/dev/null; then
+      local pinentry_path="$(brew --prefix)/bin/pinentry-mac"
+
+      mkdir -p ~/.gnupg
+      if ! grep -q "pinentry-program" ~/.gnupg/gpg-agent.conf 2>/dev/null; then
+        echo "pinentry-program $pinentry_path" >> ~/.gnupg/gpg-agent.conf
+        echo "Configured pinentry-mac in gpg-agent.conf"
+      fi
+
+      # Restart gpg-agent to apply changes
+      gpgconf --kill gpg-agent 2>/dev/null || true
+    fi
   fi
 
   # Generate GPG key
@@ -298,9 +306,15 @@ EOF
     return 1
   fi
 
-  # Copy public key to clipboard
-  gpg --armor --export "$key_id" | pbcopy
-  echo "Copied public key to clipboard"
+  local pub_key
+  pub_key=$(gpg --armor --export "$key_id")
+  if print -rn -- "$pub_key" | _clipboard_copy 2>/dev/null; then
+    echo "Copied public key to clipboard"
+  else
+    echo "Could not copy to clipboard. Public key:"
+    echo ""
+    echo "$pub_key"
+  fi
   echo "Key ID: $key_id"
 
   # Handle --apply flag

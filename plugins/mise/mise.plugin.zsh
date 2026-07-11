@@ -1,3 +1,5 @@
+export PATH="$HOME/.local/bin:$PATH"
+
 if (( ! $+commands[mise] )); then
   return
 fi
