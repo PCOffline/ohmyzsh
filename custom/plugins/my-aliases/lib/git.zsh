@@ -16,14 +16,26 @@ alias gstash='gsta -S'
 alias clc="last_commit | _clipboard_copy"
 
 function gcrename() {
+    @doc "Rename the current branch" "<new-name>"
+    @needs 1 "$@" || return
+    @git || return
+
     grename "$(git_current_branch)" $1
 }
 
 function last_commit() {
-  git log -1 --oneline --pretty=format:"%h"
+    @doc "Print the short hash of the last commit"
+    @needs 0 "$@" || return
+    @git || return
+
+    git log -1 --oneline --pretty=format:"%h"
 }
 
 function get_branch() {
+    @doc "Find the first branch matching a pattern (local or remote)" "<pattern>"
+    @needs 1 "$@" || return
+    @git || return
+
     local selected_prefix="* "
     local remotes_prefix="remotes/origin/"
     local raw_branch=$(gb -a | grep $1 -m 1 | xargs)
@@ -32,11 +44,37 @@ function get_branch() {
     echo $branch
 }
 
+function get_branch_interactive() {
+    @doc "Interactively select a branch using fzf" "[-r|-l] [query]"
+    @needs 0 "$@" || return
+    @git || return
+    @cmd "fzf" || return
+
+    local branch_flag="-a"
+    while getopts "rl" opt; do
+        case $opt in
+            r) branch_flag="-r" ;;
+            l) branch_flag="" ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    local selected_prefix="* "
+    local remotes_prefix="remotes/origin/"
+    local raw_branch=$(gb $branch_flag | sed 's/^[ \t]*//' | fzf --query="$1" --select-1 --exit-0)
+    local branch=${raw_branch#$selected_prefix}
+    branch=${branch#$remotes_prefix}
+    echo $branch
+}
+
 function get_merged_branches() {
+    @doc "List branches merged into target (defaults to current branch)" "[branch]"
+    @needs 0 "$@" || return
+    @git || return
+
     local current_branch=$(git_current_branch)
     local target_branch=${1:-$current_branch}
 
-    # Find all merged branches, excluding the current branch and main/master branches
     git branch --merged "$target_branch" |
     grep -v "^\*" |
     grep -v "$target_branch$" |
@@ -45,19 +83,49 @@ function get_merged_branches() {
     sed 's/^[ \t]*/  /'
 }
 
+function get_gone_branches() {
+    @doc "List local branches whose remote upstream has been deleted"
+    @needs 0 "$@" || return
+    @git || return
+
+    git branch -vv |
+    grep -v "^\*" |
+    grep -v "$(git_main_branch)$" |
+    grep -v "$(git_develop_branch)$" |
+    grep ': gone]' |
+    awk '{print $1}' |
+    sed 's/^[ \t]*/  /'
+}
+
 function gsws() {
+    @doc "Switch to the first branch matching a pattern" "<pattern>"
+    @needs 1 "$@" || return
+    @git || return
+
     gsw $(get_branch $@)
 }
 
 function gbDs() {
+    @doc "Force-delete the first branch matching a pattern" "<pattern>"
+    @needs 1 "$@" || return
+    @git || return
+
     gbD $(get_branch $@)
 }
 
 function cbs() {
+    @doc "Copy the first matching branch name to clipboard" "<pattern>"
+    @needs 1 "$@" || return
+    @git || return
+
     get_branch $@ | tr -d '\n' | _clipboard_copy
 }
 
 function gtag() {
+    @doc "Recreate a tag locally and on origin (delete + create + push)" "<tag-name>"
+    @needs 1 "$@" || return
+    @git || return
+
     git tag -d $1
     git push origin :$1
     git tag $1
@@ -65,6 +133,10 @@ function gtag() {
 }
 
 function gdn() {
+    @doc "Git diff excluding lock files" "[diff-args...]"
+    @needs 0 "$@" || return
+    @git || return
+
     gdnolock $@ ":!**/*-lock.json" ":!**/*.lock"
 }
 
