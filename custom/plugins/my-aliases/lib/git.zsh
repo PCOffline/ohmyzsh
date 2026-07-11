@@ -10,10 +10,10 @@ alias grkH="grhk HEAD^" # git reset --keep HEAD^
 alias grsH="grhs HEAD^" # git reset --soft HEAD^
 alias good="git bisect good"
 alias bad="git bisect bad"
-alias ccurr="git_current_branch | tr -d '\n' | pbcopy"
+alias ccurr="git_current_branch | tr -d '\n' | _clipboard_copy"
 alias gbdm='gbD $(get_merged_branches)'
 alias gstash='gsta -S'
-alias clc="last_commit | pbcopy"
+alias clc="last_commit | _clipboard_copy"
 
 function gcrename() {
     grename "$(git_current_branch)" $1
@@ -54,7 +54,7 @@ function gbDs() {
 }
 
 function cbs() {
-    get_branch $@ | tr -d '\n' | pbcopy
+    get_branch $@ | tr -d '\n' | _clipboard_copy
 }
 
 function gtag() {
