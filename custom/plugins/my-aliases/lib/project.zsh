@@ -1,24 +1,29 @@
 function yes() {
+    @doc "Start a dev environment via yarn" "[env]"
+    @needs 0 "$@" || return
+
     if [ $# -eq 0 ] ; then
         yarn "start:devgrounds"
     else
         if [[ $1 =~ ^(dev0?)?([1-9])$ ]] ; then
             yarn "start:dev0${match[2]}"
-            elif [[ $1 =~ ^(dev)?(1[1-5])$ ]] ; then
+        elif [[ $1 =~ ^(dev)?(1[1-5])$ ]] ; then
             yarn "start:dev${match[2]}"
         else
-            echo "Error! $@"
+            _fn_err "yes" "invalid environment: $1 (expected dev1-dev15)"
+            return 1
         fi
     fi
 }
 
-alias ts="yarn typecheck"
-alias pmo="yarn format"
-alias tspmo="ts & pmo & wait"
+alias a="docker compose --profile deploy --env-file .env.docker up -d --build --remove-orphans"
 
-# Open a new PR from the current branch
 function opr() {
-  open "https://bitbucket.org/buildots-ai/buildots/pull-requests/new?source=$(git_current_branch)&t=1"
+    @doc "Open a new Bitbucket pull request from the current branch"
+    @needs 0 "$@" || return
+    @git || return
+
+    open "https://bitbucket.org/buildots-ai/buildots/pull-requests/new?source=$(git_current_branch)&t=1"
 }
 
 function trns() {
@@ -59,7 +64,7 @@ function trns() {
     return 1
   fi
 
-  echo "$key,$value,,,,,,," >> "$path"
+  echo "$key,$value,,,,,,,," >> "$path"
   if [[ $? -eq 0 ]]; then
     echo "Added translation: $key -> $value"
   else
@@ -319,3 +324,5 @@ EOF
     echo "  git config commit.gpgsign true"
   fi
 }
+
+alias bd="z Downloads; node bd.mjs"
