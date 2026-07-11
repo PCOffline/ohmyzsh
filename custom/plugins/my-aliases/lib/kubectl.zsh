@@ -11,15 +11,14 @@ alias kl="kubectl logs -p"
 alias kdp="kubectl delete pod"
 
 function get_pod() {
+    @doc "Find a pod name by keyword prefix" "<keyword> [namespace]"
+    @needs 1 "$@" || return
+
     local keyword=$1
     local namespace=$2
 
-    if [[ $keyword == "" ]]; then
-        echo "No pod name provided"
-        return 1
-    fi
-
-    if [[ $namespace == "" ]]; then
+    if [[ -z "$namespace" ]]; then
+        @var "KUBECTL_NAMESPACE" "$KUBECTL_NAMESPACE" || return
         namespace=$KUBECTL_NAMESPACE
     fi
 
@@ -27,10 +26,14 @@ function get_pod() {
 }
 
 function kgl() {
+    @doc "Tail logs for a pod matched by keyword" "<keyword> [namespace]"
+    @needs 1 "$@" || return
+
     local pod=$(get_pod $@)
     local namespace=$2
 
-    if [[ $namespace == "" ]]; then
+    if [[ -z "$namespace" ]]; then
+        @var "KUBECTL_NAMESPACE" "$KUBECTL_NAMESPACE" || return
         namespace=$KUBECTL_NAMESPACE
     fi
 
@@ -38,9 +41,13 @@ function kgl() {
 }
 
 function kdpa() {
+    @doc "Delete all pods in CrashLoopBackOff state" "[namespace]"
+    @needs 0 "$@" || return
+
     local namespace=$1
 
-    if [[ $namespace == "" ]]; then
+    if [[ -z "$namespace" ]]; then
+        @var "KUBECTL_NAMESPACE" "$KUBECTL_NAMESPACE" || return
         namespace=$KUBECTL_NAMESPACE
     fi
 
@@ -49,10 +56,14 @@ function kdpa() {
 }
 
 function kdps() {
+    @doc "Delete a specific pod matched by keyword" "<keyword> [namespace]"
+    @needs 1 "$@" || return
+
     local pod=$(get_pod $@)
     local namespace=$2
 
-    if [[ $namespace == "" ]]; then
+    if [[ -z "$namespace" ]]; then
+        @var "KUBECTL_NAMESPACE" "$KUBECTL_NAMESPACE" || return
         namespace=$KUBECTL_NAMESPACE
     fi
 
@@ -60,12 +71,16 @@ function kdps() {
 }
 
 function kgenv() {
+    @doc "Print environment variables for a pod matched by keyword" "<keyword> [namespace]"
+    @needs 1 "$@" || return
+
     local pod=$(get_pod $@)
     local namespace=$2
 
     echo $pod
 
-    if [[ $namespace == "" ]]; then
+    if [[ -z "$namespace" ]]; then
+        @var "KUBECTL_NAMESPACE" "$KUBECTL_NAMESPACE" || return
         namespace=$KUBECTL_NAMESPACE
     fi
 

@@ -28,6 +28,9 @@ _my_aliases_enabled() {
   return 0
 }
 
+# Load validation helpers (always loaded first)
+source "${0:A:h}/lib/_fn.zsh"
+
 # Load enabled modules
 for module in rust git kubectl ohmyzsh project utility; do
   if _my_aliases_enabled $module; then
