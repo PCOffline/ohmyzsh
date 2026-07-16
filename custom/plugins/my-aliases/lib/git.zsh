@@ -1,5 +1,3 @@
-alias glod="git pull origin "$(git_develop_branch)""
-alias glom="git pull origin "$(git_main_branch)""
 alias gpn="git prune"
 alias s="gsw -"
 alias gde="gd ':!package-lock.json'"
@@ -11,9 +9,29 @@ alias grsH="grhs HEAD^" # git reset --soft HEAD^
 alias good="git bisect good"
 alias bad="git bisect bad"
 alias ccurr="git_current_branch | tr -d '\n' | _clipboard_copy"
-alias gbdm='gbD $(get_merged_branches)'
 alias gstash='gsta -S'
 alias clc="last_commit | _clipboard_copy"
+
+function glod() {
+  @doc "Pull from develop branch"
+  @git || return
+
+  git pull origin "$(git_develop_branch)" "$@";
+}
+
+function glom() {
+  @doc "Pull from main branch"
+  @git || return
+
+  git pull origin "$(git_main_branch)" "$@";
+}
+
+function gbdm() {
+  @doc "Delete merged branches"
+  @git || return
+
+  gbD $(get_merged_branches);
+}
 
 function gcrename() {
     @doc "Rename the current branch" "<new-name>"
