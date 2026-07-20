@@ -114,10 +114,10 @@ _alias_hint_preexec() {
 
     if [[ "$resolved" =~ "^${pat}$" ]]; then
       if [[ -n "$msg" ]]; then
-        printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead  \e[2m(%s)\e[0m\n' \
+        printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead \e[2m(%s)\e[0m\n' \
           "$sug" "$msg" >&2
       else
-        printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead  \e[2m(%s → %s)\e[0m\n' \
+        printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead \e[2m(%s → %s)\e[0m\n' \
           "$sug" "$sug_cmd" "${aliases[$sug_cmd]}" >&2
       fi
       return
@@ -167,7 +167,7 @@ _alias_hint_preexec() {
     # Only suggest if it's actually shorter than what was typed
     (( ${#suggestion} >= ${#typed} )) && return
 
-    printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead  \e[2m(%s → %s)\e[0m\n' \
+    printf '\e[33m💡 Alias tip:\e[0m Use \e[1m%s\e[0m instead \e[2m(%s → %s)\e[0m\n' \
       "$suggestion" "$best" "${aliases[$best]}" >&2
   fi
 }
