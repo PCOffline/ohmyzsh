@@ -11,6 +11,8 @@ alias bad="git bisect bad"
 alias ccurr="git_current_branch | tr -d '\n' | _clipboard_copy"
 alias gstash='gsta -S'
 alias clc="last_commit | _clipboard_copy"
+alias gcf="git config"
+alias gcfg="git config --global"
 
 function glod() {
   @doc "Pull from develop branch"
