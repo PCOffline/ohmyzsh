@@ -4,6 +4,8 @@ alias c="clear"
 alias ncui="npm-check-updates --format group --interactive"
 alias upciu="npx update-browserslist-db@latest"
 
+alias copy=_clipboard_copy
+
 function _clipboard_copy() {
   if [[ "$OSTYPE" == darwin* ]] && command -v pbcopy &>/dev/null; then
     pbcopy
