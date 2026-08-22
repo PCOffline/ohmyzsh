@@ -16,3 +16,6 @@ log/
 # zcompile cached files
 *.zwc
 *.zwc.old
+
+# compinit dump
+.zcompdump*
