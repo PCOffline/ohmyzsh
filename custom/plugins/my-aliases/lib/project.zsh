@@ -16,8 +16,6 @@ function yes() {
     fi
 }
 
-alias a="docker compose --profile deploy --env-file .env.docker up -d --build --remove-orphans"
-
 function opr() {
     @doc "Open a new Bitbucket pull request from the current branch"
     @needs 0 "$@" || return
