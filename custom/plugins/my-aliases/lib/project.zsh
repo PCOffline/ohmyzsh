@@ -338,5 +338,3 @@ EOF
     echo "  git config commit.gpgsign true"
   fi
 }
-
-alias bd="z Downloads; node bd.mjs"
