@@ -13,19 +13,21 @@
 #   ALIAS_HINTS_EXCLUDE=(ll cd)     # Aliases to never hint about
 #
 # CUSTOM RULES (call from any plugin or .zshrc loaded after alias-hints):
-#   alias_hint_add <pattern> <suggestion> [message]
+#   alias_hint_add <pattern> <suggestion> [message] [condition]
 #     pattern     regex matched against the fully-resolved command
 #     suggestion  what to display as the recommended alternative
 #     message     optional context shown in parentheses
+#     condition   optional zsh expression, evaluated at match time; the rule
+#                 only applies when it succeeds (e.g. '[[ $PWD == ~/foo* ]]')
 
 : ${ALIAS_HINTS_ENABLED:=true}
 : ${ALIAS_HINTS_EXCLUDE:=()}
 
-# ── Custom rules storage (ordered triplets: pattern, suggestion, message) ───
+# ── Custom rules storage (ordered quads: pattern, suggestion, message, condition) ───
 typeset -ga _alias_hint_rules=()
 
 alias_hint_add() {
-  _alias_hint_rules+=("$1" "$2" "${3:-}")
+  _alias_hint_rules+=("$1" "$2" "${3:-}" "${4:-}")
 }
 
 # ── First-word index + lazy expansion cache ─────────────────────────────────
@@ -99,18 +101,21 @@ _alias_hint_preexec() {
   local typed_cmd="${typed%% *}"
 
   # ── Phase 1: Custom rules (first match wins) ──────────────────────────
-  local pat sug msg sug_cmd
+  local pat sug msg cond sug_cmd
   local -i idx
-  for (( idx=1; idx<=${#_alias_hint_rules}; idx+=3 )); do
+  for (( idx=1; idx<=${#_alias_hint_rules}; idx+=4 )); do
     pat="${_alias_hint_rules[$idx]}"
     sug="${_alias_hint_rules[$((idx+1))]}"
     msg="${_alias_hint_rules[$((idx+2))]}"
+    cond="${_alias_hint_rules[$((idx+3))]}"
     sug_cmd="${sug%% *}"
 
     # Don't suggest what the user already typed / expanded through
     [[ "$sug_cmd" == "$typed_cmd" ]] && continue
     (( ${_alias_hints_chain[(Ie)$sug_cmd]} )) && continue
     (( ${ALIAS_HINTS_EXCLUDE[(Ie)$sug_cmd]} )) && continue
+
+    [[ -n "$cond" ]] && ! eval "$cond" && continue
 
     if [[ "$resolved" =~ "^${pat}$" ]]; then
       if [[ -n "$msg" ]]; then
